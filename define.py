@@ -7,18 +7,28 @@ if len(args) < 2:
     exit(1)
 
 
+# Store all definitions so the user can go to prev/next without having to send another request
+definitions = {}
+currentDefinition = 0
+
+
 def define(words):
+    """
+    :param words: The words to define
+    """
     definition = lookup(" ".join(words))
+    formatResponse(definition)
 
 
 def lookup(words):
     """
     :param words: The word(s) you want to define
-    :return: A dictionary containing the best definition
+    :return: A dictionary containing the best definition for this word
     """
+    global definitions
     url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
 
-    queryString = {"word": words}
+    queryString = {"term": words}
 
     headers = {
         'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
@@ -27,29 +37,38 @@ def lookup(words):
 
     # Get a list of all the definitions of this query
     response = requests.request("GET", url, headers=headers, params=queryString).json()["list"]
-    # Sort the response to get the definition with the highest rating
-    response.sort(key=lambda x: ratio(x), reverse=True)
+    if "error" in response:
+        print("Something went wrong. Try again later.")
 
     # Nothing found
     if len(response) == 0:
         print("No definitions found for \"{}\"".format(words))
         exit(1)
 
+    definitions = [formatDict(dic) for dic in response]
+
     # A word was found, return a dictionary with all the required info.
-    return {"word": response[0]["word"], "definition": response[0]["definition"],
-            "example": response[0]["example"], "thumbs_up": response[0]["thumbs_up"],
-            "thumbs_down": response[0]["thumbs_down"], "link": response[0]["permalink"],
-            "author": response[0]["author"]}
+    return formatDict(response[0])
 
 
-# Calculates the upvote/downvote ratio | Don't divide by 0 if there are no (down)votes yet
+def formatDict(dic):
+    """
+    :param dic: The dictionary to format
+    :return: Returns a formatted version of an input dictionary, assigning values to their appropriate keys
+    """
+    return {"word": dic["word"], "definition": dic["definition"],
+            "example": dic["example"], "thumbs_up": dic["thumbs_up"],
+            "thumbs_down": dic["thumbs_down"], "link": dic["permalink"],
+            "author": dic["author"]}
+
+
 def ratio(definition):
     """
     :param definition: The dictionary representing the definition of this word
     :return: the upvote/downvote ratio of this word
     """
     return (100 * int(definition["thumbs_up"])) / (int(definition["thumbs_up"]) + int(definition["thumbs_down"])) \
-        if int(definition["thumbs_down"]) != 0 else 100.0
+        if int(definition["thumbs_down"]) != 0 else 100.0  # Don't divide by 0 if there are no downvotes yet
 
 
 def getApiKey():
@@ -57,11 +76,70 @@ def getApiKey():
     :return: Returns your api key
     """
     try:
-        with open("apikey.txt", "r") as file:
-            return file.readline().strip()
+        with open("{}/apikey.txt".format(sys.path[0]), "r") as file:
+            return str(file.readline().strip())
     except FileNotFoundError:
         print("You have not yet generated an Api key.\n"
               "Visit {} and paste your key into a file named \"apikey.txt\".".format(
                "https://english.api.rakuten.net/community/api/urban-dictionary?endpoint=53aa4f68e4b07e1f4ebeb2b0"
                 ))
         exit(1)
+
+
+# Returns coloured text
+def markdown(text, col):
+    colours = {"blue": "\033[94m", "green": "\033[92m", "red": "\033[91m", "bold": "\033[1m"}
+
+    # If multiple options were passed, return all of them in order
+    if isinstance(col, list):
+        if len(col) > 1:
+            return markdown(colours[col[0]] + str(text) + "\033[0m", col[1:])
+
+        # If a list of 1 element was passed, just take that element (avoids indexerrors)
+        col = col[0]
+    return colours[col] + str(text) + "\033[0m"
+
+
+# Removes all markdown out of the definition
+def formatDefinition(definition):
+    definition = definition.replace("[", "")
+    definition = definition.replace("]", "")
+    definition = definition.replace("\"", "")
+    definition = definition.replace("\n\n", "\n")
+    return definition
+
+
+def formatResponse(definition):
+    global definitions
+    global currentDefinition
+    print(
+        "{} #{} of {}\n".format(markdown("Definition", "bold"),
+                                markdown(currentDefinition + 1, "bold"), markdown(len(definitions), "bold")) +
+        "{}: {}\n\n".format(markdown("Word", ["blue", "bold"]), definition["word"]) +
+        "{}: {}\n\n".format(markdown("Definition", ["blue", "bold"]), formatDefinition(definition["definition"])) +
+        "{}: {}\n\n".format(markdown("Example", ["blue", "bold"]), formatDefinition(definition["example"])) +
+        "{}: {} | {}: {} | {}: {}%\n\n".format(markdown("Upvotes", ["green", "bold"]), definition["thumbs_up"],
+                                               markdown("Downvotes", ["red", "bold"]), definition["thumbs_down"],
+                                               markdown("Rating", ["blue", "bold"]), str(round(ratio(definition), 2))) +
+        "{}: {}\n\n".format(markdown("Author", ["blue", "bold"]), definition["author"]) +
+        "{}: {}\n".format(markdown("Link", ["blue", "bold"]), definition["link"])
+    )
+
+    np = input("Previous Definition/Next Definition (P/N): ")
+    if not np:
+        exit(0)
+
+    # Next/Previous
+    elif np.lower().startswith("p"):
+        currentDefinition = currentDefinition - 1 if currentDefinition != 0 else currentDefinition
+    elif np.lower().startswith("n"):
+        currentDefinition = currentDefinition + 1 if currentDefinition != len(definitions) - 1 else currentDefinition
+    else:
+        print("Invalid parameter \"{}\".".format(np))
+        exit(0)
+
+    print("\n\n")
+    formatResponse(definitions[currentDefinition])
+
+
+define(args[1:])
