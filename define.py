@@ -89,8 +89,12 @@ def getApiKey():
         exit(2)
 
 
-# Returns coloured text
 def markdown(text, col):
+    """
+    :param text: The text to colour
+    :param col: A string (or list of strings) of colours to apply
+    :return: The input text with all colours applied
+    """
     colours = {"blue": "\033[94m", "green": "\033[92m", "red": "\033[91m", "bold": "\033[1m"}
 
     # If multiple options were passed, return all of them in order
@@ -103,8 +107,11 @@ def markdown(text, col):
     return colours[col] + str(text) + "\033[0m"
 
 
-# Removes all markdown out of the definition
 def formatDefinition(definition):
+    """
+    :param definition: The definition to format
+    :return: The definition with all existing markdown removed
+    """
     definition = definition.replace("[", "")
     definition = definition.replace("]", "")
     definition = definition.replace("\"", "")
@@ -113,6 +120,10 @@ def formatDefinition(definition):
 
 
 def formatResponse(definition):
+    """
+    :param definition: The chosen definition to format
+    :return: A formatted response of the input definition
+    """
     global definitions
     global currentDefinition
     print(
@@ -129,6 +140,7 @@ def formatResponse(definition):
     )
 
     np = input("Previous Definition/Next Definition (P/N): ")
+
     if not np:
         exit(4)
 
