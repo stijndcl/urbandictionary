@@ -8,6 +8,6 @@ if len(sys.argv) != 2:
 with open("{}/filepath.txt".format(sys.path[0]), "w+") as file:
     file.write(sys.argv[1])
 
-print("Configured {} as the path to your Api Key.\nYou can run this command at any time to change this in the future."
+print("Configured {} as the path to your API Key.\nYou can run this command at any time to change this in the future."
       .format(sys.argv[1]))
 exit(0)

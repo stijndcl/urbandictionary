@@ -32,7 +32,7 @@ def lookup(words):
 
     headers = {
         'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
-        "x-rapidapi-key": getApiKey()
+        "x-rapidapi-key": getAPIKey()
     }
 
     # Get a list of all the definitions of this query
@@ -71,20 +71,20 @@ def ratio(definition):
         if int(definition["thumbs_down"]) != 0 else 100.0  # Don't divide by 0 if there are no downvotes yet
 
 
-def getApiKey():
+def getAPIKey():
     """
     :return: Returns your api key
     """
     with open("{}/filepath.txt".format(sys.path[0]), "r") as file:
         path = file.readline().strip()
         if not path:
-            print("You have not yet passed the path to your Api Key file.\nRun python3 config.py path_to_your_key.")
+            print("You have not yet passed the path to your API Key file.\nRun python3 config.py path_to_your_key.")
             exit(1)
     try:
         with open("{}/apikey.txt".format(sys.path[0]), "r") as file:
             return str(file.readline().strip())
     except FileNotFoundError:
-        print("Could not find {}. You have not yet generated an Api key.\n"
+        print("Could not find {}. You have not yet generated an API key.\n"
               "Make sure you passed the correct path to your file.".format(path))
         exit(2)
 
