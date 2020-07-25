@@ -43,7 +43,7 @@ def lookup(words):
     # Nothing found
     if len(response) == 0:
         print("No definitions found for \"{}\"".format(words))
-        exit(2)
+        exit(3)
 
     definitions = [formatDict(dic) for dic in response]
 
@@ -75,15 +75,18 @@ def getApiKey():
     """
     :return: Returns your api key
     """
+    with open("{}/filepath.txt".format(sys.path[0]), "r") as file:
+        path = file.readline().strip()
+        if not path:
+            print("You have not yet passed the path to your Api Key file.\nRun python3 config.py path_to_your_key.")
+            exit(1)
     try:
         with open("{}/apikey.txt".format(sys.path[0]), "r") as file:
             return str(file.readline().strip())
     except FileNotFoundError:
-        print("You have not yet generated an Api key.\n"
-              "Visit {} and paste your key into a file named \"apikey.txt\".".format(
-               "https://rapidapi.com/community/api/urban-dictionary"
-                ))
-        exit(1)
+        print("Could not find {}. You have not yet generated an Api key.\n"
+              "Make sure you passed the correct path to your file.".format(path))
+        exit(2)
 
 
 # Returns coloured text
@@ -127,7 +130,7 @@ def formatResponse(definition):
 
     np = input("Previous Definition/Next Definition (P/N): ")
     if not np:
-        exit(3)
+        exit(4)
 
     # Next/Previous
     elif np.lower().startswith("p"):
@@ -136,7 +139,7 @@ def formatResponse(definition):
         currentDefinition = currentDefinition + 1 if currentDefinition != len(definitions) - 1 else currentDefinition
     else:
         print("Invalid parameter \"{}\".".format(np))
-        exit(4)
+        exit(5)
 
     print("\n\n")
     formatResponse(definitions[currentDefinition])
