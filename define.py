@@ -81,7 +81,7 @@ def getApiKey():
     except FileNotFoundError:
         print("You have not yet generated an Api key.\n"
               "Visit {} and paste your key into a file named \"apikey.txt\".".format(
-               "https://english.api.rakuten.net/community/api/urban-dictionary?endpoint=53aa4f68e4b07e1f4ebeb2b0"
+               "https://rapidapi.com/community/api/urban-dictionary"
                 ))
         exit(1)
 
