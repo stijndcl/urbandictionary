@@ -43,7 +43,7 @@ def lookup(words):
     # Nothing found
     if len(response) == 0:
         print("No definitions found for \"{}\"".format(words))
-        exit(1)
+        exit(2)
 
     definitions = [formatDict(dic) for dic in response]
 
@@ -127,7 +127,7 @@ def formatResponse(definition):
 
     np = input("Previous Definition/Next Definition (P/N): ")
     if not np:
-        exit(0)
+        exit(3)
 
     # Next/Previous
     elif np.lower().startswith("p"):
@@ -136,7 +136,7 @@ def formatResponse(definition):
         currentDefinition = currentDefinition + 1 if currentDefinition != len(definitions) - 1 else currentDefinition
     else:
         print("Invalid parameter \"{}\".".format(np))
-        exit(0)
+        exit(4)
 
     print("\n\n")
     formatResponse(definitions[currentDefinition])
