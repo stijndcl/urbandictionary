@@ -64,3 +64,4 @@ def getApiKey():
               "Visit {} and paste your key into a file named \"apikey.txt\".".format(
                "https://english.api.rakuten.net/community/api/urban-dictionary?endpoint=53aa4f68e4b07e1f4ebeb2b0"
                 ))
+        exit(1)
