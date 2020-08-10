@@ -5,8 +5,8 @@ The Urban Dictionary in your terminal.
 Installing
 ----------
 
-- Generate an Api Key at https://rapidapi.com/community/api/urban-dictionary
-- Place the Api Key in a file of your choice
+- Generate an API Key at https://rapidapi.com/community/api/urban-dictionary
+- Place the API Key in a file of your choice
 - Run the following command:
 
 
