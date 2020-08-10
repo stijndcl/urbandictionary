@@ -18,8 +18,6 @@ Installing
 Usage
 -----
 
-    ```sh
     python3 define.py search_term
-    ```
     
 Search term can be one or multiple words, with or without quotes.
