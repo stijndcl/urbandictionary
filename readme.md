@@ -11,13 +11,15 @@ Installing
 
 
 
-    code:: sh
+    ```sh
     python3 config.py absolute_path_to_your_file
+    ```
 
 Usage
 -----
 
-    code:: sh
+    ```sh
     python3 define.py search_term
+    ```
     
 Search term can be one or multiple words, with or without quotes.
